@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebPage 2</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .remove-row {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Monthly</h1>
+    <form action="/monthlysubmit" method="POST">
+      <table id="designationTable">
+        <tr>
+          <th>
+            <label for="designation">Designation:</label>
+            <select id="designation" name="designation" onchange="addRow()">
+              <option value="">Select designation</option>
+              <option value="Analyst">Analyst</option>
+              <option value="Associate">Associate</option>
+              <option value="Sr-Associate">Sr Associate</option>
+              <option value="Project-Leader">Project Leader</option>
+              <option value="Manager">Manager</option>
+              <option value="Senior-Manager">Senior Manager</option>
+              <option value="Associate-Director">Associate Director</option>
+              <option value="Director">Director</option>
+              <option value="Senior-Director">Senior Director</option>
+              <option value="Principal">Principal</option>
+            </select>
+          </th>
+          <th>Level</th>
+          <th>
+            <label for="location">Location:</label>
+            <select id="location" name="location" onchange="addRow()">
+              <option value="">Select location</option>
+              <option value="NJ">NJ</option>
+              <option value="CA">CA</option>
+              <option value="MA">MA</option>
+              <option value="India">India</option>
+              <option value="Canada">Canada</option>
+              <option value="Germany">Germany</option>
+              <option value="France">France</option>
+              <option value="UK">UK</option>
+              <option value="Switzerland">Switzerland</option>
+            </select>
+          </th>
+          <th>Duration</th>
+<!--          <label for="location">Location:</label>-->
+          <input type="text" class="form-control" id="month" name="month" readonly>
+          <th></th>
+        </tr>
+<!--        <th>uniqueid</th>-->
+        <input type="hidden"  class="form-control" id="uniqueid" name="uniqueid" value="{{id}}" >
+      </table>
+      <br>
+      <br>
+      <button type="submit" class="btn btn-primary" onclick="window.location.href='MCalculation.html'"> Submit</button>
+    </form>
+  </div>
+
+
+  <script>
+    function addRow() {
+      var designationDropdown = document.getElementById("designation");
+      var selectedDesignation = designationDropdown.value;
+      var level = getLevelForDesignation(selectedDesignation);
+
+      var locationDropdown = document.getElementById("location");
+      var selectedLocation = locationDropdown.value;
+
+      var durationInput = document.createElement("input");
+      durationInput.type = "text";
+      durationInput.name = "duration";
+
+
+
+      if (selectedDesignation && level && selectedLocation) {
+        var table = document.getElementById("designationTable");
+        var newRow = table.insertRow(-1);
+
+        var designationCell = newRow.insertCell(0);
+        designationCell.innerHTML = selectedDesignation;
+
+        var levelCell = newRow.insertCell(1);
+        levelCell.innerHTML = level;
+
+        var locationCell = newRow.insertCell(2);
+        locationCell.innerHTML = selectedLocation;
+
+        var removeCell = newRow.insertCell(3);
+        removeCell.innerHTML = '<span class="remove-row" onclick="removeRow(this)">✖</span>';
+
+        var durationCell = newRow.insertCell(3);
+        durationCell.appendChild(durationInput);
+
+        designationDropdown.value = "";
+        locationDropdown.value = "";
+      }
+    }
+
+    function getLevelForDesignation(designation) {
+      switch (designation) {
+        case 'Analyst':
+          return 'L1';
+        case 'Associate':
+          return 'L2';
+        case 'Sr-Associate':
+          return 'L3';
+        case 'Project-Leader':
+          return 'L4';
+        case 'Manager':
+          return 'L5';
+        case 'Senior-Manager':
+          return 'L6';
+        case 'Associate-Director':
+          return 'L7';
+        case 'Director':
+          return 'L8';
+        case 'Senior-Director':
+          return 'L9';
+        case 'Principal':
+          return 'L10';
+        default:
+          return '';
+      }
+    }
+
+    function removeRow(row) {
+      var table = document.getElementById("designationTable");
+      var rowIndex = row.parentNode.parentNode.rowIndex;
+      table.deleteRow(rowIndex);
+    }
+
+
+
+
+  </script>
+</body>
+</html>
+

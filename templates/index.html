@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Project Details Form</title>
+  <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">-->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .form-container {
+      width: 400px;
+    }
+    .form-container form {
+      text-align: center;
+    }
+    .form-container form .buttons {
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+  <script>
+     function calculateDuration() {
+  var projectStartDate = new Date(document.getElementById("projectStartDate").value);
+  var projectEndDate = new Date(document.getElementById("projectEndDate").value);
+
+  var durationInMonths = (projectEndDate.getFullYear() - projectStartDate.getFullYear()) * 12;
+  durationInMonths -= projectStartDate.getMonth();
+  durationInMonths += projectEndDate.getMonth();
+
+  <!-- Check if start and end dates are in the same month-->
+  if (projectStartDate.getMonth() === projectEndDate.getMonth()) {
+    durationInMonths = 1;
+  }
+
+  document.getElementById("duration").value = durationInMonths;
+}
+
+    function populateFields() {
+      var customerCategory = document.getElementById("cCategory").value;
+      var lob = document.getElementById("lob").value;
+
+      document.getElementById("customerName").value = customerCategory;
+      document.getElementById("projectLOB").value = lob;
+    }
+
+
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h2>Project Details</h2>
+    <form action="/submit" method="post"  >
+      <div class="form-group">
+        <label for="customerName">Customer Name:</label>
+        <select class="form-control" id="customerName" name="customerName" onchange="populateFields()">
+          <option value="C1">C1</option>
+          <option value="C2">C2</option>
+          <option value="C3">C3</option>
+          <option value="C4">C4</option>
+          <option value="C5">C5</option>
+          <option value="C6">C6</option>
+          <option value="C7">C7</option>
+          <option value="C8">C8</option>
+          <option value="C9">C9</option>
+          <option value="C10">C10</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="opportunityId">Opportunity ID:</label>
+        <input type="text" class="form-control" id="opportunityId" name="opportunityId" required>
+      </div>
+
+      <div class="form-group">
+        <label for="projectName">Project Name:</label>
+        <input type="text" class="form-control" id="projectName" name="projectName" required>
+        <input type="hidden"  class="form-control" id="uniqueid" name="uniqueid" value="{{id}}" >
+      </div>
+
+      <div class="form-group">
+        <label for="lob">Line of Business (LOB):</label>
+        <select class="form-control" id="lob" name="lob" onchange="populateFields()">
+         <option value="BIM">BIM</option>
+          <option value="CE">CE</option>
+          <option value="DS">DS</option>
+          <option value="OC">OC</option>
+          <option value="HEOR">HEOR</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="projectStartDate">Start Date:</label>
+        <input type="date" class="form-control" id="projectStartDate" name="projectStartDate" required>
+      </div>
+      <div class="form-group">
+        <label for="projectEndDate">End Date:</label>
+        <input type="date" class="form-control" id="projectEndDate" name="projectEndDate" required onchange="calculateDuration()">
+      </div>
+      <div class="form-group">
+        <label for="duration">Project Duration (in months):</label>
+        <input type="text" class="form-control" id="duration" name="duration" readonly>
+      </div>
+      <div class="form-group">
+        <label >Resource Planning Type:</label>
+        <div class="buttons">
+          <input name="planningType" type="submit" value="Weekly" onclick="window.location.href='Weekly.html'">
+          <input name="planningType" type="submit" value="Monthly" onclick="window.location.href='monthly.html'">
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
