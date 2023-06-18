@@ -89,13 +89,18 @@ async def add_product(request: Request, customerName: str = Form(None), opportun
 async def months(request: Request, payload=Body(...),
                  db: Session = Depends(get_db)):
     pay = json.dumps(payload)
+    data = db.query(models.Core).filter(models.Core.uniqueid == payload[0]['uniqueid']).first()
+    data.month = json.dumps(pay)
+    db.commit()
     return templates.TemplateResponse("MCalculation.html", context={"request": request})
 
 
 @app.post('/weeklysubmit', status_code=200, response_class=HTMLResponse)
 async def weekly(request: Request, payload=Body(...), db: Session = Depends(get_db)):
     pay = json.dumps(payload)
-    # print(pays)
+    data = db.query(models.Core).filter(models.Core.uniqueid == payload[0]['uniqueid']).first()
+    data.week = json.dumps(pay)
+    db.commit()
     return templates.TemplateResponse("MCalculation.html", context={"request": request})
 
 
