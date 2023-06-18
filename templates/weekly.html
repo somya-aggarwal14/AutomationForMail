@@ -83,6 +83,7 @@
           success: function(response) {
             // Handle successful response from the API
             console.log('Rows sent to the API successfully.');
+            window.location.href = 'http://127.0.0.1:8000/final/'+$('#uniqueid').val().trim();
           },
           error: function(xhr, status, error) {
             // Handle error response from the API

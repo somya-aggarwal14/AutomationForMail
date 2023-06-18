@@ -6,7 +6,7 @@ from pathlib import Path
 
 import fastapi
 import uvicorn
-from fastapi import Depends, Body
+from fastapi import Depends, Body, Query
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 # from fastapi.staticfiles import StaticFiles
@@ -92,7 +92,7 @@ async def months(request: Request, payload=Body(...),
     data = db.query(models.Core).filter(models.Core.uniqueid == payload[0]['uniqueid']).first()
     data.month = json.dumps(pay)
     db.commit()
-    return templates.TemplateResponse("MCalculation.html", context={"request": request})
+    # return templates.TemplateResponse("MCalculation.html", context={"request": request})
 
 
 @app.post('/weeklysubmit', status_code=200, response_class=HTMLResponse)
@@ -101,7 +101,16 @@ async def weekly(request: Request, payload=Body(...), db: Session = Depends(get_
     data = db.query(models.Core).filter(models.Core.uniqueid == payload[0]['uniqueid']).first()
     data.week = json.dumps(pay)
     db.commit()
-    return templates.TemplateResponse("MCalculation.html", context={"request": request})
+    # return templates.TemplateResponse("MCalculation.html", context={"request": request})
+
+
+@app.get('/final/{uniqueId}', status_code=200, response_class=HTMLResponse)
+async def weekly(request: Request, uniqueId: str, db: Session = Depends(get_db)):
+    pay = uniqueId
+    data = db.query(models.Core).filter(models.Core.uniqueid == uniqueId).first()
+    # data.week = json.dumps(pay)
+    # db.commit()
+    return templates.TemplateResponse("MCalculation.html", context={"request": request, "data": json.loads(data.month)})
 
 
 @app.post('/cp', status_code=200)
