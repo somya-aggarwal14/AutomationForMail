@@ -1,187 +1,129 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>WebPage 2</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Presidents</title>
   <style>
     table {
       border-collapse: collapse;
       width: 100%;
     }
+
     th, td {
+      border: 1px solid black;
       padding: 8px;
       text-align: left;
-      border-bottom: 1px solid #ddd;
     }
+
     th {
       background-color: #f2f2f2;
     }
-    .remove-row {
-      cursor: pointer;
+
+    .editable {
+      background-color: #fff;
     }
   </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Add event listener for the "Add Row" button
+      $('#addRowBtn').click(function() {
+        $('#presidentTable thead tr').remove();
+        // Add editable month columns
+        var months = ['jan', 'feb', 'march', 'april', 'may', 'june', 'july', 'aug', 'sep', 'oct', 'nov', 'dec'];
+        var country = $('#countryDropdown').val();
+        var president = $('#presidentDropdown').val();
+        var numMonths = 12; // if number of months greater than actual months
+
+        // Create a new row with empty editable months
+        var newRow = '<tr><td contenteditable="true">' + country + '</td><td contenteditable="true">' + president + '</td>';
+        var heading = '<tr><th>Country</th><th>President</th>';
+
+        for (var i = 0; i < numMonths; i++) {
+          heading += '<th>' + months[i] + '</th>';
+          newRow += '<td class="editable" contenteditable="true"></td>';
+        }
+
+        heading += '</tr>';
+        newRow += '</tr>';
+
+        // Append the new row to the table body
+        $('#presidentTable thead').append(heading);
+        $('#presidentTable tbody').append(newRow);
+      });
+
+      // Send rows to the API
+      $('#submitBtn').click(function() {
+        var rows = [];
+
+        // Iterate through each row in the table body
+        $('#presidentTable tbody tr').each(function() {
+          var row = {};
+          var cells = $(this).find('td');
+
+          // Extract values from the cells
+          row.country = $(cells[0]).text().trim();
+          row.president = $(cells[1]).text().trim();
+          row.months = [];
+
+          // Extract month values
+          for (var i = 2; i < cells.length; i++) {
+            row.months.push($(cells[i]).text().trim());
+          }
+
+          rows.push(row);
+        });
+
+        // Send the rows to the API
+        $.ajax({
+          url: 'http://127.0.0.1:8000/weeklysubmit',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(rows),
+          success: function(response) {
+            // Handle successful response from the API
+            console.log('Rows sent to the API successfully.');
+          },
+          error: function(xhr, status, error) {
+            // Handle error response from the API
+            console.error('Error sending rows to the API:', error);
+          }
+        });
+      });
+    });
+  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>Weekly</h1>
-    <form action="/weeklysubmit" method="POST">
-      <table id="designationTable">
-        <tr>
-          <th>
-            <label for="designation">Designation:</label>
-            <select id="designation" name="designation" onchange="addRow()">
-              <option value="">Select designation</option>
-              <option value="Analyst">Analyst</option>
-              <option value="Associate">Associate</option>
-              <option value="Sr-Associate">Sr Associate</option>
-              <option value="Project-Leader">Project Leader</option>
-              <option value="Manager">Manager</option>
-              <option value="Senior-Manager">Senior Manager</option>
-              <option value="Associate-Director">Associate Director</option>
-              <option value="Director">Director</option>
-              <option value="Senior-Director">Senior Director</option>
-              <option value="Principal">Principal</option>
-            </select>
-          </th>
-          <th>Level</th>
-          <th>
-            <label for="location">Location:</label>
-            <select id="location" name="location" onchange="addRow()">
-              <option value="">Select location</option>
-              <option value="NJ">NJ</option>
-              <option value="CA">CA</option>
-              <option value="MA">MA</option>
-              <option value="India">India</option>
-              <option value="Canada">Canada</option>
-              <option value="Germany">Germany</option>
-              <option value="France">France</option>
-              <option value="UK">UK</option>
-              <option value="Switzerland">Switzerland</option>
-            </select>
-          </th>
-           <th>Duration</th>
-<!--          <label for="location">Location:</label>-->
-          <input type="text" class="form-control" id="week" name="week" readonly>
-          <th></th>
-        </tr>
-         <input type="hidden"  class="form-control" id="uniqueid" name="uniqueid" value="{{id}}" >
-      </table>
-      <br>
-      <br>
-      <button type="submit" class="btn btn-primary" onclick="window.location.href='MCalculation.html'"> Submit</button>
-    </form>
-  </div>
+  <h1>Presidents</h1>
 
+  <label for="countryDropdown">Country:</label>
+  <select id="countryDropdown">
+    <option value="USA">USA</option>
+    <option value="Canada">Canada</option>
+    <option value="France">France</option>
+    <!-- Add more countries here -->
+  </select>
 
-  <script>
-    function addRow() {
-      var designationDropdown = document.getElementById("designation");
-      var selectedDesignation = designationDropdown.value;
-      var level = getLevelForDesignation(selectedDesignation);
+  <label for="presidentDropdown">President:</label>
+  <select id="presidentDropdown">
+    <option value="John Doe">John Doe</option>
+    <option value="Jane Smith">Jane Smith</option>
+    <option value="Michael Johnson">Michael Johnson</option>
+    <!-- Add more presidents here -->
+  </select>
 
-      var locationDropdown = document.getElementById("location");
-      var selectedLocation = locationDropdown.value;
+  <!-- <label for="numMonthsInput">Number of Months:</label> -->
+  <!-- <input type="number" id="numMonthsInput" min="1"> -->
 
-      if (selectedDesignation && level && selectedLocation) {
-        var table = document.getElementById("designationTable");
-        var newRow = table.insertRow(-1);
+  <button id="addRowBtn">Add Row</button>
 
-        var designationCell = newRow.insertCell(0);
-        designationCell.innerHTML = selectedDesignation;
+  <table id="presidentTable">
+    <thead>
+    </thead>
+    <tbody>
+      <!-- Existing rows will be added here -->
+    </tbody>
+  </table>
 
-        var levelCell = newRow.insertCell(1);
-        levelCell.innerHTML = level;
-
-        var locationCell = newRow.insertCell(2);
-        locationCell.innerHTML = selectedLocation;
-
-        var removeCell = newRow.insertCell(3);
-        removeCell.innerHTML = '<span class="remove-row" onclick="removeRow(this)">✖</span>';
-
-        designationDropdown.value = "";
-        locationDropdown.value = "";
-      }
-    }
-
-    function getLevelForDesignation(designation) {
-      switch (designation) {
-        case 'Analyst':
-          return 'L1';
-        case 'Associate':
-          return 'L2';
-        case 'Sr-Associate':
-          return 'L3';
-        case 'Project-Leader':
-          return 'L4';
-        case 'Manager':
-          return 'L5';
-        case 'Senior-Manager':
-          return 'L6';
-        case 'Associate-Director':
-          return 'L7';
-        case 'Director':
-          return 'L8';
-        case 'Senior-Director':
-          return 'L9';
-        case 'Principal':
-          return 'L10';
-        default:
-          return '';
-      }
-    }
-
-    function removeRow(row) {
-      var table = document.getElementById("designationTable");
-      var rowIndex = row.parentNode.parentNode.rowIndex;
-      table.deleteRow(rowIndex);
-    }
-  </script>
+  <button id="submitBtn">Submit Rows to API</button>
 </body>
 </html>
-
-<!--<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">Sign In</h4>
-                    </div>
-                    <div class="card-body">
-                        <form action="/submit" method="POST">
-                            <div class="mb-3">
-                                <label for="customerName" class="form-label">Email</label>
-                                <input type="text" class="form-control" id="customerName" name="customerName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="opportunityId" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="opportunityId" name="opportunityId" required>
-                            </div>
-                            <label for="projectName" class="form-label">ProjectName</label>
-                            <input type="text" class="form-control" id="projectName" name="projectName" required>
-                            <label for="LOB" class="form-label">LOB</label>
-                            <input type="text" class="form-control" id="LOB" name="LOB" required>
-                            <label for="projectStartDate" class="form-label">projectStartDate</label>
-                            <input type="text" class="form-control" id="projectStartDate" name="projectStartDate" required>
-                            <label for="projectEndDate" class="form-label">projectEndDate</label>
-                            <input type="text" class="form-control" id="projectEndDate" name="projectEndDate" required>
-                            <label for="planningType" class="form-label">planningType</label>
-                            <input type="text" class="form-control" id="planningType" name="planningType" required>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>--->

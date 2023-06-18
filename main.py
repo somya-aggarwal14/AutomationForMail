@@ -1,11 +1,12 @@
 # from fastapi.staticfiles import StaticFiles
+import json
 import os
 import platform as plat
 from pathlib import Path
 
 import fastapi
 import uvicorn
-from fastapi import Depends
+from fastapi import Depends, Body
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 # from fastapi.staticfiles import StaticFiles
@@ -13,6 +14,9 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from starlette.middleware.cors import CORSMiddleware
 import random
+
+from starlette.responses import JSONResponse
+
 import models
 import schemas
 from Reuse import CoreReusable
@@ -39,7 +43,7 @@ if plat.system() == "Windows":
 elif plat.system() == "Linux":
     path = str(ROOT_DIR_PROJECT) + os.sep + "templates"
 else:
-    path = "templates"
+    path = str(ROOT_DIR_PROJECT) + os.sep+"templates"
 
 templates = Jinja2Templates(directory=path)
 # templates = Jinja2Templates(directory="templates")
@@ -82,30 +86,17 @@ async def add_product(request: Request, customerName: str = Form(None), opportun
 
 
 @app.post('/monthlysubmit', status_code=200)
-async def months(request: Request, designation: str = Form(None), location: str = Form(None),
-                 uniqueid: str = Form(None), month: str = Form(None),
+async def months(request: Request, payload=Body(...),
                  db: Session = Depends(get_db)):
-    data = CoreReusable(designation=designation, location=location, uniqueid=uniqueid, month=month
-                        )
-    data.val(db)
-    # return RedirectResponse(url="/temp/payu/form/" + txnid + "/verify_payment", status_code=303)
-    # return templates.TemplateResponse("weekly.html", context={"request": request})
-    # return fastapi.responses.RedirectResponse(url="/payu/form/"+txnid+"/verify_payment", status_code=307)
-
     return templates.TemplateResponse("MCalculation.html", context={"request": request})
 
 
-@app.post('/weeklysubmit', status_code=200)
-async def weekly(request: Request, designation: str = Form(None), location: str = Form(None),
-                 uniqueid: str = Form(None), week: str = Form(None),
-                 db: Session = Depends(get_db)):
-    data = CoreReusable(designation=designation, location=location, uniqueid=uniqueid, week=week
-                        )
-    data.val(db)
-    # return RedirectResponse(url="/temp/payu/form/" + txnid + "/verify_payment", status_code=303)
-    # return templates.TemplateResponse("weekly.html", context={"request": request})
-    # return fastapi.responses.RedirectResponse(url="/payu/form/"+txnid+"/verify_payment", status_code=307)
-
+@app.post('/weeklysubmit', status_code=200,response_class=HTMLResponse)
+async def weekly(request: Request, payload=Body(...), db: Session = Depends(get_db)):
+    pay = json.dumps(payload)
+    
+    # pays = json.loads(pay)
+    # print(pays)
     return templates.TemplateResponse("MCalculation.html", context={"request": request})
 
 
