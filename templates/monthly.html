@@ -35,7 +35,7 @@
         var numMonths = 12; // if number of months greater than actual months
 
         // Create a new row with empty editable months
-        var newRow = '<tr><td contenteditable="true">' + country + '</td><td contenteditable="true">' + president + '</td>';
+        var newRow = '<tr><td contenteditable="false">' + country + '</td><td contenteditable="false">' + president + '</td>';
         var heading = '<tr><th>Country</th><th>President</th>';
 
         for (var i = 0; i < numMonths; i++) {
@@ -58,6 +58,8 @@
         // Iterate through each row in the table body
         $('#presidentTable tbody tr').each(function() {
           var row = {};
+          row.uniqueid = $('#uniqueid').val().trim()
+
           var cells = $(this).find('td');
 
           // Extract values from the cells
@@ -110,7 +112,7 @@
     <option value="Michael Johnson">Michael Johnson</option>
     <!-- Add more presidents here -->
   </select>
-
+  <input type="hidden" class="form-control" id="uniqueid" name="uniqueid" value="{{id}}">
   <!-- <label for="numMonthsInput">Number of Months:</label> -->
   <!-- <input type="number" id="numMonthsInput" min="1"> -->
 

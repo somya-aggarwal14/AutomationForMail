@@ -58,6 +58,7 @@
         // Iterate through each row in the table body
         $('#presidentTable tbody tr').each(function() {
           var row = {};
+          row.uniqueid = $('#uniqueid').val().trim()
           var cells = $(this).find('td');
 
           // Extract values from the cells
@@ -102,7 +103,7 @@
     <option value="France">France</option>
     <!-- Add more countries here -->
   </select>
-
+  <input type="hidden" class="form-control" id="uniqueid" name="uniqueid" value="{{id}}">
   <label for="presidentDropdown">President:</label>
   <select id="presidentDropdown">
     <option value="John Doe">John Doe</option>

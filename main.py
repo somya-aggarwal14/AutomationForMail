@@ -43,7 +43,7 @@ if plat.system() == "Windows":
 elif plat.system() == "Linux":
     path = str(ROOT_DIR_PROJECT) + os.sep + "templates"
 else:
-    path = str(ROOT_DIR_PROJECT) + os.sep+"templates"
+    path = str(ROOT_DIR_PROJECT) + os.sep + "templates"
 
 templates = Jinja2Templates(directory=path)
 # templates = Jinja2Templates(directory="templates")
@@ -88,14 +88,13 @@ async def add_product(request: Request, customerName: str = Form(None), opportun
 @app.post('/monthlysubmit', status_code=200)
 async def months(request: Request, payload=Body(...),
                  db: Session = Depends(get_db)):
+    pay = json.dumps(payload)
     return templates.TemplateResponse("MCalculation.html", context={"request": request})
 
 
-@app.post('/weeklysubmit', status_code=200,response_class=HTMLResponse)
+@app.post('/weeklysubmit', status_code=200, response_class=HTMLResponse)
 async def weekly(request: Request, payload=Body(...), db: Session = Depends(get_db)):
     pay = json.dumps(payload)
-    
-    # pays = json.loads(pay)
     # print(pays)
     return templates.TemplateResponse("MCalculation.html", context={"request": request})
 
